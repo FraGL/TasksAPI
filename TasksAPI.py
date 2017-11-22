@@ -5,40 +5,42 @@ from firebase import firebase
 app = FlaskAPI(__name__)
 firebase = firebase.FirebaseApplication('https://proyecto-final-arquitectura.firebaseio.com')
 
-'''def note_repr(key):
-    return {
-        'url': request.host_url.rstrip('/') + url_for('notes_detail', key=key),
-        'text': notes[key]
-    }
-'''
+
+@app.route("/tasks", methods=['GET'])
+def get_tasks():
+    if request.method == 'GET':
+    	tasks = firebase.get('/tasks', None)
+        return tasks, status.HTTP_200_OK
+
+@app.route("/tasks/myTasks", methods=['GET'])
+def get_my_tasks():
+    if request.method == 'GET':
+    	tasks = firebase.get('/tasks/myTasks', None)
+        return tasks, status.HTTP_200_OK
+
+@app.route("tasks/<int:key>/", methods=['GET'])
+def task_detail(key):
+    if request.method == 'GET':
+        tasks = firebase.get('/tasks', None)
+        return tasks, status.HTTP_200_OK
+
+@app.route("tasks/myTasks/<int:key>/", methods=['GET'])
+def my_task_detail(key):
+    if request.method == 'GET':
+        tasks = firebase.get('/tasks', None)
+        return tasks, status.HTTP_200_OK
 
 @app.route("/tasks", methods=['POST'])
-def tasks():
+def post_tasks():
     if request.method == 'POST':
     	new_task = firebase.post('/tasks', {'PyTEST':'Works'})
-        return new_task(idx), status.HTTP_201_CREATED
-        pass
+        return '', status.HTTP_201_CREATED
 
-
-@app.route("/<int:key>/", methods=['GET', 'PUT', 'DELETE'])
-def notes_detail(key):
-    """
-    Retrieve, update or delete note instances.
-    """
-    if request.method == 'PUT':
-        note = str(request.data.get('text', ''))
-        notes[key] = note
-        return note_repr(key)
-
-    elif request.method == 'DELETE':
-        notes.pop(key, None)
+@app.route("/tasks", methods=['DELETE'])
+def delete_task():
+    if request.method == 'POST':
+    	new_task = firebase.delete('/tasks', {'PyTEST':'Works'})
         return '', status.HTTP_204_NO_CONTENT
-
-    # request.method == 'GET'
-    if key not in notes:
-        raise exceptions.NotFound()
-    return note_repr(key)
-
 
 if __name__ == "__main__":
     app.run(debug=True)
