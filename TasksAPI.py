@@ -1,35 +1,23 @@
 from flask import request, url_for
 from flask_api import FlaskAPI, status, exceptions
+from firebase import firebase
 
 app = FlaskAPI(__name__)
+firebase = firebase.FirebaseApplication('https://proyecto-final-arquitectura.firebaseio.com')
 
-
-notes = {
-    0: 'do the shopping',
-    1: 'build the codez',
-    2: 'paint the door',
-}
-
-def note_repr(key):
+'''def note_repr(key):
     return {
         'url': request.host_url.rstrip('/') + url_for('notes_detail', key=key),
         'text': notes[key]
     }
+'''
 
-
-@app.route("/", methods=['GET', 'POST'])
-def notes_list():
-    """
-    List or create notes.
-    """
+@app.route("/tasks", methods=['POST'])
+def tasks():
     if request.method == 'POST':
-        note = str(request.data.get('text', ''))
-        idx = max(notes.keys()) + 1
-        notes[idx] = note
-        return note_repr(idx), status.HTTP_201_CREATED
-
-    # request.method == 'GET'
-    return [note_repr(idx) for idx in sorted(notes.keys())]
+    	new_task = firebase.post('/tasks', {'PyTEST':'Works'})
+        return new_task(idx), status.HTTP_201_CREATED
+        pass
 
 
 @app.route("/<int:key>/", methods=['GET', 'PUT', 'DELETE'])
